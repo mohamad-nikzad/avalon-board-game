@@ -200,12 +200,37 @@ function resolveVotes(state: GameState): GameState {
   // Proposal rejected
   const newProposalCount = state.proposalCount + 1;
   if (newProposalCount >= 5) {
-    // 5 rejected proposals = evil wins
+    // 5 rejected proposals = auto-fail this mission, move to next
+    const failResult: MissionResult = {
+      questIndex: state.currentQuest,
+      team: [],
+      fails: 0,
+      success: false,
+    };
+    const results = [...state.missionResults, failResult];
+    const evilWins = results.filter(r => !r.success).length;
+
+    if (evilWins >= 3) {
+      return {
+        ...state,
+        phase: "game_over",
+        winner: "evil",
+        missionResults: results,
+        voteRecords: [...state.voteRecords, voteRecord],
+      };
+    }
+
+    const nextLeader = (state.currentLeader + 1) % state.players.length;
     return {
       ...state,
-      phase: "game_over",
-      winner: "evil",
+      phase: "mission_result",
+      missionResults: results,
       voteRecords: [...state.voteRecords, voteRecord],
+      currentVotes: {},
+      currentQuest: state.currentQuest + 1,
+      currentLeader: nextLeader,
+      proposalCount: 0,
+      proposedTeam: [],
     };
   }
 
