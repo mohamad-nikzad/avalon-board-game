@@ -5,7 +5,11 @@ import { motion } from "framer-motion";
 
 export function MissionPhase() {
   const { state, dispatch } = useGame();
-  const teamPlayer = state.players.find(p => p.id === state.proposedTeam[state.currentPassIndex])!;
+  const teamPlayerId = state.proposedTeam[state.currentPassIndex];
+  const teamPlayer = state.players.find(p => p.id === teamPlayerId);
+
+  if (!teamPlayer) return null;
+
   const isEvil = teamPlayer.alignment === "evil";
 
   if (state.phase === "mission_pass") {
