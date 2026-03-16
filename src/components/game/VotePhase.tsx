@@ -6,13 +6,16 @@ import { motion } from "framer-motion";
 export function VotePhase() {
   const { state, dispatch } = useGame();
   const currentPlayer = state.players[state.currentPassIndex];
-  const leader = state.players[state.currentLeader];
+
+  // Guard: if currentPassIndex is out of bounds (votes resolved), don't render
+  if (!currentPlayer) return null;
 
   if (state.phase === "vote_pass") {
+    const leader = state.players[state.currentLeader];
     return (
       <PassDevice
         playerName={currentPlayer.name}
-        subtitle={`VOTE ON ${leader.name.toUpperCase()}'S PROPOSAL`}
+        subtitle={`VOTE ON ${leader?.name?.toUpperCase() ?? "LEADER"}'S PROPOSAL`}
         onConfirm={() => dispatch({ type: "SET_PHASE", phase: "vote_cast" })}
       />
     );
@@ -30,7 +33,8 @@ export function VotePhase() {
         <h2 className="text-display text-xl">CAST YOUR VOTE</h2>
         <div className="mt-3 flex flex-wrap gap-1.5 justify-center">
           {state.proposedTeam.map(id => {
-            const p = state.players.find(pl => pl.id === id)!;
+            const p = state.players.find(pl => pl.id === id);
+            if (!p) return null;
             return (
               <span key={id} className="text-xs font-mono tracking-wider uppercase px-2 py-1 border border-glass-border rounded">
                 {p.name}
