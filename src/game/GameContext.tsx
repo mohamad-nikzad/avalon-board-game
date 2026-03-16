@@ -109,7 +109,9 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     }
 
     case "SET_PHASE":
-      return { ...state, phase: action.phase };
+      // Reset currentPassIndex when entering pass phases
+      const resetPass = ["mission_pass", "vote_pass", "night_pass", "proposal"].includes(action.phase);
+      return { ...state, phase: action.phase, ...(resetPass && { currentPassIndex: 0 }) };
 
     case "NEXT_PASS": {
       const next = state.currentPassIndex + 1;
