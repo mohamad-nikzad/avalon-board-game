@@ -15,7 +15,7 @@ export function SetupScreen() {
   const config = GAME_CONFIGS[validNames.length];
 
   const addPlayer = () => {
-    if (inputValue.trim() && playerNames.length < 10) {
+    if (inputValue.trim() && validNames.length < 10) {
       setPlayerNames([...playerNames.slice(0, -1).filter(n => n.trim()), inputValue.trim(), ""]);
       setInputValue("");
     }
